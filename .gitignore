@@ -1,0 +1,11 @@
+__pycache__/
+.venv/
+*.env
+.claude/
+docs/superpowers/
+.ref/
+*.png
+*.jpg
+*.pdf
+*.pt
+
