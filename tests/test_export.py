@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from lerobot_anno.export import export_lerobot
+from lerobot_anno.export import assign_indices_by_segments, export_lerobot
 
 
 def _make_root(tmp_path: Path) -> Path:
@@ -72,3 +72,15 @@ def test_export_rejects_same_dir(tmp_path):
 
     with pytest.raises(ValueError):
         export_lerobot(str(root), str(root), {})
+
+
+def test_gap_and_pre_segment_frames_unlabeled():
+    # Non-contiguous segments with a gap; frames before the first segment and
+    # inside the gap must stay -1 (not inherit the last segment's index).
+    segs = [
+        {"start": 0.0, "end": 0.2, "label": "a"},
+        {"start": 0.5, "end": 0.8, "label": "b"},
+    ]
+    mapping = {"a": 0, "b": 1}
+    got = assign_indices_by_segments([-1.0, 0.1, 0.3, 0.6, 0.9], segs, mapping, "label")
+    assert got == [-1, 0, -1, 1, -1]

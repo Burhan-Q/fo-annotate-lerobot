@@ -73,7 +73,12 @@ def build_high_level_dataframe(
     return df, task_map
 
 
-def assign_indices_by_segments(timestamps, segments, mapping, label_key):
+def assign_indices_by_segments(
+    timestamps: pd.Series,
+    segments: list[dict[str, Any]],
+    mapping: dict[str, int],
+    label_key: str,
+) -> list[int]:
     values = [-1] * len(timestamps)
     if not segments:
         return values
@@ -84,7 +89,7 @@ def assign_indices_by_segments(timestamps, segments, mapping, label_key):
             start = float(seg.get("start", 0))
             end = float(seg.get("end", 0))
             is_last = seg_idx == len(segments_sorted) - 1
-            if (start <= ts_val < end) or (is_last and ts_val <= end):
+            if (start <= ts_val < end) or (is_last and start <= ts_val <= end):
                 label = (
                     make_task_key(seg)
                     if label_key == "task_key"
@@ -95,7 +100,12 @@ def assign_indices_by_segments(timestamps, segments, mapping, label_key):
     return values
 
 
-def export_lerobot(lerobot_root, output_dir, annotations, copy_videos=False):
+def export_lerobot(
+    lerobot_root: str | Path,
+    output_dir: str | Path,
+    annotations: dict[int, dict[str, Any]],
+    copy_videos: bool = False,
+) -> dict[str, Any]:
     root = Path(lerobot_root)
     out = Path(output_dir)
     if (root / "meta" / "info.json").exists() is False:
