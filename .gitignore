@@ -9,3 +9,5 @@ docs/superpowers/
 *.pdf
 *.pt
 
+node_modules/
+dist/
