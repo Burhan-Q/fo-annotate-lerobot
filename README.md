@@ -50,8 +50,8 @@ fiftyone plugins list                    # confirm @Burhan-Q/annotate-lerobot is
 
 1. Open an episode (group) in the **sample modal**.
 2. **Split** the modal (e.g. *Split horizontally*) so the **video (Sample)** is in one pane
-   and the **LeRobot Annotator** panel in the other — the panel needs the video looker mounted
-   for its timeline (Set start/end are disabled until then).
+   and the **LeRobot Annotator** panel in the other — the panel reads and seeks the playhead
+   through the mounted video looker (Set start/end are disabled until it mounts).
 3. On the **Subtasks** tab: scrub the video, click **Set start** / **Set end** (they capture the
    current frame → seconds), type a subtask **label**, click **Add**.
 4. On the **High-level** tab: same, plus `user_prompt` + `robot_utterance` (required) and optional
@@ -94,8 +94,10 @@ user-facing (operator browser) entry point.
 - **Single-slice storage:** native timeline rendering of segments appears only when viewing the
   **default (anchor) camera slice**; the panel's list shows them from any slice. (Accepted MVP
   trade-off vs. replicating across slices.)
-- The playhead-driven **Set start/end** requires the video looker to be mounted (Split the
-  modal); the buttons are disabled otherwise.
+- The playhead-driven **Set start/end** and ▶ seek require the video looker to be mounted
+  (Split the modal); the buttons are disabled otherwise. If the video pane is later replaced,
+  the panel may briefly reference the unmounted looker and seeks become no-ops until the video
+  pane is restored.
 
 ## Development / tests
 

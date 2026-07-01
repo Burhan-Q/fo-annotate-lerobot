@@ -26,6 +26,7 @@ declare module "@fiftyone/operators" {
 }
 declare module "@fiftyone/state" {
   export const nullableModalSampleId: any;
+  export const modalLooker: any;
 }
 declare module "recoil" {
   export function useRecoilValue<T>(atom: any): T;

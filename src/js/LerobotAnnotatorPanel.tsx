@@ -25,10 +25,11 @@ const s: Record<string, React.CSSProperties> = {
 };
 
 export default function LerobotAnnotatorPanel() {
-  const { currentFrame, seekFrame, isTimelineActive } = useFrameSync();
+  const { currentFrame, seekFrame, isPlayheadActive } = useFrameSync();
   const { sampleId, data, loading, error, addOrUpdate, remove } = useEpisodeSegments();
   const [kind, setKind] = useState<Kind>("subtask");
   const [form, setForm] = useState<SegmentInput>(EMPTY);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   if (!sampleId) return <div style={s.center}>Open a LeRobot episode in the modal to annotate.</div>;
   if (error) return <div style={s.center}>Failed to load segments: {error}</div>;
@@ -43,10 +44,23 @@ export default function LerobotAnnotatorPanel() {
 
   const onSubmit = async () => {
     if (!validateSegment(kind, form)) return;
-    await addOrUpdate(kind, form);
-    setForm(EMPTY);
+    try {
+      await addOrUpdate(kind, form);
+      setForm(EMPTY);
+      setActionError(null);
+    } catch (e) {
+      setActionError(String(e));
+    }
   };
-  const onEdit = (seg: any) => { setKind(kind); setForm({ ...seg }); };
+  const onDelete = async (id: string) => {
+    try {
+      await remove(kind, id);
+      setActionError(null);
+    } catch (e) {
+      setActionError(String(e));
+    }
+  };
+  const onEdit = (seg: any) => setForm({ ...seg });
 
   const fmt = (x?: number) => (x == null ? "–" : `${x.toFixed(3)}s`);
 
@@ -61,9 +75,9 @@ export default function LerobotAnnotatorPanel() {
       </div>
 
       <div style={s.row}>
-        <button style={s.btn} onClick={captureStart} disabled={!isTimelineActive}>Set start</button>
+        <button style={s.btn} onClick={captureStart} disabled={!isPlayheadActive}>Set start</button>
         <span>{fmt(form.start_s)}</span>
-        <button style={s.btn} onClick={captureEnd} disabled={!isTimelineActive}>Set end</button>
+        <button style={s.btn} onClick={captureEnd} disabled={!isPlayheadActive}>Set end</button>
         <span>{fmt(form.end_s)}</span>
         <span style={{ opacity: 0.6 }}>frame {currentFrame ?? "–"}</span>
       </div>
@@ -86,18 +100,19 @@ export default function LerobotAnnotatorPanel() {
         </button>
         {form.id && <button style={s.btn} onClick={() => setForm(EMPTY)}>Cancel</button>}
       </div>
+      {actionError && <div style={{ color: "#ff7b7b", marginBottom: 6 }}>Failed: {actionError}</div>}
 
       <div>
         {list.length === 0 && <div style={{ opacity: 0.6, padding: "8px 0" }}>No {kind} segments yet.</div>}
         {list.map((seg) => (
           <div style={s.item} key={seg.id}>
             <button style={s.btn} title="Seek to start"
-              onClick={() => seg.support && seekFrame(seg.support[0])} disabled={!isTimelineActive}>▶</button>
+              onClick={() => seg.support && seekFrame(seg.support[0])} disabled={!isPlayheadActive}>▶</button>
             <span style={{ flex: 1 }}>
               <strong>{seg.label || "(dialogue)"}</strong> &nbsp;{fmt(seg.start_s)}→{fmt(seg.end_s)}
             </span>
             <button style={s.btn} onClick={() => onEdit(seg)}>Edit</button>
-            <button style={s.btn} onClick={() => remove(kind, seg.id)}>Delete</button>
+            <button style={s.btn} onClick={() => onDelete(seg.id)}>Delete</button>
           </div>
         ))}
       </div>
