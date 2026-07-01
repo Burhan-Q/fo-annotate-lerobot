@@ -1,16 +1,20 @@
-// src/js/index.tsx  (temporary; replaced in Task 6)
+// src/js/index.tsx
 import "@voxel51/voodo/theme.css";
 import { registerComponent, PluginComponentType } from "@fiftyone/plugins";
+import LerobotAnnotatorPanel from "./LerobotAnnotatorPanel";
 
-function Placeholder() {
-  return null;
+// Gate to imported LeRobot datasets via the importer's sample fields. The
+// activator ctx is { schema, dataset }; schema is the SAMPLE-field dict.
+// NOTE: confirm these field names against the real import (assumption §14).
+function isLerobotDataset(ctx?: { schema?: Record<string, unknown> }): boolean {
+  return Boolean(ctx?.schema?.episode_index) && Boolean(ctx?.schema?.camera_view);
 }
 
 registerComponent({
   name: "lerobot_annotator",
   label: "LeRobot Annotator",
-  component: Placeholder,
+  component: LerobotAnnotatorPanel,
   type: PluginComponentType.Panel,
   panelOptions: { surfaces: "modal" },
-  activator: () => false,
+  activator: isLerobotDataset,
 });
