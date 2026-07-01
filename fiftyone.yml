@@ -1,0 +1,14 @@
+name: "@Burhan-Q/annotate-lerobot"
+type: plugin
+author: Burhan Qaddoumi
+version: 0.1.0
+description: Annotate LeRobot datasets in FiftyOne with subtask + high-level dialogue segments and export to LeRobot v3.0
+fiftyone:
+  version: ">=1.17.0"
+operators:
+  - get_episode_segments
+  - save_segment
+  - delete_segment
+  - export_lerobot
+panels:
+  - lerobot_annotator
