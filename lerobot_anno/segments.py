@@ -1,6 +1,7 @@
 """Read/write per-episode segments as TemporalDetections on the group's
 default-slice anchor sample, plus seconds<->frame conversion and export gather."""
 
+from typing import Any
 
 import fiftyone as fo
 
@@ -16,7 +17,9 @@ DIALOG_ATTRS = (
 )
 
 
-def seconds_to_support(start_s, end_s, fps, num_frames=None):
+def seconds_to_support(
+    start_s: float, end_s: float, fps: float, num_frames: int | None = None
+) -> list[int]:
     fps = float(fps or 0)
     first = int(round(float(start_s) * fps)) + 1
     last = int(round(float(end_s) * fps)) + 1
@@ -28,14 +31,16 @@ def seconds_to_support(start_s, end_s, fps, num_frames=None):
     return [first, last]
 
 
-def resolve_anchor_sample(dataset, sample_id):
+def resolve_anchor_sample(dataset: fo.Dataset, sample_id: str) -> fo.Sample:
     sample = dataset[sample_id]
     if dataset.media_type != "group":
         return sample
     return dataset.get_group(sample.group.id)[dataset.default_group_slice]
 
 
-def episode_fps_frames(dataset, sample):
+def episode_fps_frames(
+    dataset: fo.Dataset, sample: fo.Sample
+) -> tuple[float | None, int | None]:
     md = sample.metadata
     fps = getattr(md, "frame_rate", None) if md else None
     nframes = getattr(md, "total_frame_count", None) if md else None
@@ -47,7 +52,7 @@ def episode_fps_frames(dataset, sample):
     return (float(fps) if fps else None), (int(nframes) if nframes else None)
 
 
-def _serialize(sample, field):
+def _serialize(sample: fo.Sample, field: str) -> list[dict[str, Any]]:
     out = []
     dets = sample[field] if sample.has_field(field) else None
     if dets is None:
@@ -68,7 +73,7 @@ def _serialize(sample, field):
     return out
 
 
-def get_episode_segments(dataset, sample_id):
+def get_episode_segments(dataset: fo.Dataset, sample_id: str) -> dict[str, Any]:
     anchor = resolve_anchor_sample(dataset, sample_id)
     fps, num_frames = episode_fps_frames(dataset, anchor)
     return {
@@ -82,7 +87,9 @@ def get_episode_segments(dataset, sample_id):
     }
 
 
-def save_segment(dataset, sample_id, kind, segment):
+def save_segment(
+    dataset: fo.Dataset, sample_id: str, kind: str, segment: dict[str, Any]
+) -> dict[str, Any]:
     field = FIELD_FOR_KIND[kind]
     anchor = resolve_anchor_sample(dataset, sample_id)
     fps, num_frames = episode_fps_frames(dataset, anchor)
@@ -119,7 +126,9 @@ def save_segment(dataset, sample_id, kind, segment):
     return {"ok": True, "id": out_id}
 
 
-def delete_segment(dataset, sample_id, kind, seg_id):
+def delete_segment(
+    dataset: fo.Dataset, sample_id: str, kind: str, seg_id: str
+) -> dict[str, Any]:
     field = FIELD_FOR_KIND[kind]
     anchor = resolve_anchor_sample(dataset, sample_id)
     dets = anchor[field] if anchor.has_field(field) else None
@@ -130,7 +139,7 @@ def delete_segment(dataset, sample_id, kind, seg_id):
     return {"ok": True}
 
 
-def _to_export(d, kind):
+def _to_export(d: fo.TemporalDetection, kind: str) -> dict[str, Any]:
     base = {
         "start": float(getattr(d, "start_s", 0.0) or 0.0),
         "end": float(getattr(d, "end_s", 0.0) or 0.0),
@@ -143,7 +152,7 @@ def _to_export(d, kind):
     return base
 
 
-def gather_annotations(dataset):
+def gather_annotations(dataset: fo.Dataset) -> dict[int, dict[str, Any]]:
     if dataset.media_type == "group":
         view = dataset.select_group_slices(dataset.default_group_slice)
     else:
