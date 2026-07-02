@@ -1,6 +1,6 @@
 """Pure pandas/pyarrow export of FiftyOne annotations to a LeRobot v3.0 copy.
 
-Adapted from /Users/burhan/Documents/_code/lerobot-annotate (backend/app.py).
+Adapted from the lerobot-annotate reference tool (backend/app.py).
 No FiftyOne imports here so it is unit-testable in isolation.
 """
 
