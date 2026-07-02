@@ -98,7 +98,7 @@ import fiftyone.operators as foo
 dataset = fo.load_dataset("my-lerobot-dataset")
 
 foo.execute_operator(
-    "@Burhan-Q/annotate-lerobot/export_lerobot",
+    "@Burhan-Q/annotate-lerobot/export_lerobot",  # full operator URI
     ctx={
         "dataset": dataset,
         "params": {
