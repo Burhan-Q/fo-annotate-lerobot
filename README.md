@@ -54,6 +54,8 @@ To work on the plugin from a local clone instead, see
    takes your **original LeRobot dataset root** + an **output directory** (+ optional *copy
    videos*), and writes the annotated copy (see *What it produces*). Runs delegated by default.
 
+---
+
 ### Annotation UI
 
 The panel has two tabs, one per segment kind. The numbered boxes in each image below map
@@ -62,12 +64,16 @@ to the rows of the table beneath it.
 The **Subtasks** tab annotates the fine-grained motion phases of an episode — labeled
 time spans like `reach`, `grab`, `release` — which export to the per-frame
 `subtask_index` column (unique labels become `meta/subtasks.parquet`). Capture the span
-from the playhead, name it, and *Add*.
+from the playhead, name it, and click <kbd>Add</kbd>.
 
 <details>
-<summary><b>Subtasks tab — annotated UI reference</b></summary>
+<summary><b>🏞️ Subtasks Tab Reference Image</b></summary>
 
-![Subtasks tab — annotated panel](assets/subtasks-panel-crop-annotated.jpg)
+<img
+  height="840" 
+  alt="FiftyOne LeRobot Annotation sub-tasks panel UI." 
+  src="https://github.com/user-attachments/assets/fa624cf7-a962-4391-9787-097e360af6ec"
+/>
 
 | # | Element | Description | Expected values | How to use | Required |
 |---|---|---|---|---|---|
@@ -95,9 +101,13 @@ robot responded over a time span, plus optional `skill` / `scenario_type` /
 Subtasks table; the boxes below cover what is specific to dialogue annotation.
 
 <details>
-<summary><b>High-level tab — annotated UI reference</b></summary>
+<summary><b>🌌 High-level Tab Reference Image</b></summary>
 
-![High-level tab — annotated panel](assets/highlevel-panel-crop-annotated.jpg)
+<img
+  height="840"
+  alt="FiftyOne LeRobot Annotation high-level panel UI."
+  src="https://github.com/user-attachments/assets/b32beefe-b36d-44fc-8cd1-b6242734e45d"
+/>
 
 | # | Element | Description | Expected values | How to use | Required |
 |---|---|---|---|---|---|
@@ -112,7 +122,9 @@ Subtasks table; the boxes below cover what is specific to dialogue annotation.
 
 </details>
 
-## What it produces
+---
+
+## What Gets Exported
 
 On export (the `export_lerobot` operator), against your original LeRobot v3.0 dataset:
 - `meta/subtasks.parquet` — unique subtask labels → `subtask_index`.
@@ -136,7 +148,7 @@ of truth. Conversions: `seconds = (frame − 1) / fps`. Export rule: a frame wit
 gets a segment's index iff `start_s ≤ ts < end_s`, with the **last** segment (by start time)
 **end-inclusive** but still lower-bounded (so gap / pre-first-segment frames stay `-1`).
 
-## Operators
+## Plugin Operators
 
 | Operator | Listed | Purpose |
 |---|---|---|
