@@ -10,4 +10,3 @@ docs/superpowers/
 *.pt
 
 node_modules/
-dist/
