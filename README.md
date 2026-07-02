@@ -1,4 +1,10 @@
-# @Burhan-Q/annotate-lerobot
+<img
+  height="800"
+  alt="Short demo showcasing the FiftyOne plugin LeRobot Annotation plugin."
+  src="https://github.com/user-attachments/assets/b2e9374a-b564-4dca-aedb-fe9706ac5b8e"
+/>
+
+# FiftyOne Annotate-LeRobot Plugin
 
 A FiftyOne hybrid plugin to **annotate imported LeRobot datasets** with per-episode
 **subtask** and **high-level dialogue** time segments, directly in the FiftyOne App, and
