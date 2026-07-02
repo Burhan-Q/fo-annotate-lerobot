@@ -54,6 +54,64 @@ To work on the plugin from a local clone instead, see
    takes your **original LeRobot dataset root** + an **output directory** (+ optional *copy
    videos*), and writes the annotated copy (see *What it produces*). Runs delegated by default.
 
+### Annotation UI
+
+The panel has two tabs, one per segment kind. The numbered boxes in each image below map
+to the rows of the table beneath it.
+
+The **Subtasks** tab annotates the fine-grained motion phases of an episode — labeled
+time spans like `reach`, `grab`, `release` — which export to the per-frame
+`subtask_index` column (unique labels become `meta/subtasks.parquet`). Capture the span
+from the playhead, name it, and *Add*.
+
+<details>
+<summary><b>Subtasks tab — annotated UI reference</b></summary>
+
+![Subtasks tab — annotated panel](assets/subtasks-panel-crop-annotated.jpg)
+
+| # | Element | Description | Expected values | How to use | Required |
+|---|---|---|---|---|---|
+| 1 | **Subtasks tab** | Active segment kind: labeled time spans that export to per-frame `subtask_index`. | active = orange | Click to select. Switching tabs clears the in-progress form (not saved segments). | — |
+| 2 | **High-level tab** | Switches the editor to dialogue annotation (see the High-level image). | — | Click; clears the in-progress form. | — |
+| 3 | **Set start** | Captures the current playhead frame as the segment start; `seconds = (frame − 1) / fps`. | — | Pause/scrub the video at the start moment, click. Disabled until the video looker is mounted. | yes |
+| 4 | **Captured start time** | Read-only display of the captured start. | seconds, `0.000s` default | Re-click *Set start* to overwrite. | — |
+| 5 | **Set end** | Captures the current playhead frame as the segment end. | must be **>** start | Scrub past the start moment, click. | yes |
+| 6 | **Captured end time** | Read-only display of the captured end. | seconds | Re-click *Set end* to overwrite. | — |
+| 7 | **Frame readout** | Live 1-based playhead frame number. | `frame N`; `frame –` until the video looker mounts | Reference while scrubbing; if `–`, split the modal so the video pane is visible. | — |
+| 8 | **`label` input** | Subtask name; unique labels become `meta/subtasks.parquet` rows (`subtask_index`) at export. | short free text, e.g. `reach`, `grasp` | Type the name after capturing times. | yes |
+| 9 | **Add / Update** | Saves the segment (validates `end > start` + label present). Shows *Update* + *Cancel* while editing. | enabled ⇔ valid | Click to persist to the episode's anchor sample; the list and the video's label overlays update. | — |
+| 10 | **▶ seek** (one per segment row) | Jumps the video playhead to that segment's start frame. | — | Click to review a segment in the video. | — |
+| 11 | **Segment summary** | Label and `start → end` span of a saved segment. | `label start_s→end_s` | Read-only. | — |
+| 12 | **Edit** | Loads the row into the form for changes. | — | Click, adjust times/label, *Update* (or *Cancel*). | — |
+| 13 | **Delete** | Removes the segment immediately (no confirmation). | — | Click to delete. | — |
+
+</details>
+
+The **High-level** tab annotates dialogue exchanges — what the human asked and how the
+robot responded over a time span, plus optional `skill` / `scenario_type` /
+`response_type` tags — which export to the per-frame `task_index_high_level` column
+(unique exchanges become `meta/tasks_high_level.parquet`). The tab switcher, *Set start*
+/ *Set end*, captured times, and frame readout behave exactly as rows 1–7 of the
+Subtasks table; the boxes below cover what is specific to dialogue annotation.
+
+<details>
+<summary><b>High-level tab — annotated UI reference</b></summary>
+
+![High-level tab — annotated panel](assets/highlevel-panel-crop-annotated.jpg)
+
+| # | Element | Description | Expected values | How to use | Required |
+|---|---|---|---|---|---|
+| 1 | **`user_prompt`** | What the human asks the robot; also the row's display label, and part of the dedup key for `task_index_high_level` at export. | free text, e.g. `put the lego brick into the box` | Type the instruction/question. | yes |
+| 2 | **`robot_utterance`** | The robot's spoken/logged response. | free text | Type the response. | yes |
+| 3 | **`skill`** | Optional skill tag for the exchange. | short token, e.g. `pick_and_place` | Fill if your training setup uses it (exported to `meta/tasks_high_level.parquet`). | no |
+| 4 | **`scenario_type`** | Optional scenario tag. | short token, e.g. `tabletop` | Optional. | no |
+| 5 | **`response_type`** | Optional response category. | short token, e.g. `action`, `confirmation` | Optional. | no |
+| 6 | **Add / Update** | Saves the exchange once valid (`end > start`, fields 1–2 non-empty). | enabled ⇔ valid | Click to persist. | — |
+| 7 | **Dialogue entry** | Saved exchange: `user_prompt` + `start_s→end_s`, with ▶ seek / *Edit* / *Delete*. | — | Same row controls as subtasks. | — |
+| 8 | **Dialogue entry (2nd)** | Episodes can hold any number of exchanges; each unique dialogue tuple gets one `task_index` at export. | — | — | — |
+
+</details>
+
 ## What it produces
 
 On export (the `export_lerobot` operator), against your original LeRobot v3.0 dataset:
