@@ -4,9 +4,8 @@ A FiftyOne hybrid plugin to **annotate imported LeRobot datasets** with per-epis
 **subtask** and **high-level dialogue** time segments, directly in the FiftyOne App, and
 **export an annotated LeRobot v3.0 dataset** ready for training.
 
-> **Status:** MVP, on branch `feat/annotate-lerobot-mvp` (not yet merged). All unit tests
-> pass; the in-App annotate flow (playhead capture, seek, add/edit/delete) and a real-data
-> export round-trip are verified live.
+> **Status:** MVP. All unit tests pass; the in-App annotate flow (playhead capture, seek,
+> add/edit/delete) and a real-data export round-trip are verified live.
 
 It complements the **importer** (`harpreetsahota204/fiftyone_lerobot_importer`) — you import a
 LeRobot dataset into FiftyOne with that, then use this plugin to add the subtask/dialogue
