@@ -6,7 +6,7 @@
   src="https://github.com/user-attachments/assets/b2e9374a-b564-4dca-aedb-fe9706ac5b8e"
 />
 
-A FiftyOne hybrid plugin to **annotate imported LeRobot datasets** with per-episode
+A [FiftyOne](https://github.com/voxel51/fiftyone) hybrid plugin to **annotate imported [Hugging Face LeRobot](https://huggingface.co/lerobot) datasets** with per-episode
 **subtask** and **high-level dialogue** time segments, directly in the FiftyOne App, and
 **export an annotated LeRobot v3.0 dataset** ready for training.
 
